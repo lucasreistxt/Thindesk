@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Lista de Chamados</title>
+        <!-- Bootstrap CSS -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+            rel="stylesheet"
+            />
+        <!-- CSS Personalizado -->
+        <link rel="stylesheet" th:href="@{/css/style.css}" />
+        <style>
+            /* Estilo para as linhas alternadas da tabela */
+            tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            tbody tr:nth-child(odd) {
+                background-color: #ffffff;
+            }
+
+            /* Ajuste para os botões de ação */
+            .action-buttons .btn {
+                margin-right: 5px;
+            }
+
+            /* Feedback visual quando não há dados */
+            .empty-message {
+                text-align: center;
+                font-size: 1.2em;
+                color: #6c757d;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Sidebar incluída como fragmento -->
+        <aside>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        </aside>
+
+        <!-- Botão para abrir/fechar a sidebar em telas pequenas -->
+        <button class="toggle-btn btn btn-dark d-md-none" onclick="toggleSidebar()">
+            <span>&#9776;</span>
+        </button>
+
+        <div class="container mt-4" th:fragment="content">
+            <h1 class="mb-4">Lista de Chamados</h1>
+
+    <!-- Filtro por status e busca -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form th:action="@{/view/chamados}" method="get" class="d-flex w-75">
+            <input
+                type="text"
+                name="descricao"
+                class="form-control me-2"
+                placeholder="Buscar chamado..."
+                th:value="${paramDescricao}"
+            />
+            <select
+                name="status"
+                class="form-select me-2"
+                th:value="${paramStatus}"
+            >
+                <option value="">Todos os Status</option>
+                <option value="Em Andamento">Em Andamento</option>
+                <option value="Concluído">Concluído</option>
+            </select>
+            <select
+                name="prioridade"
+                class="form-select me-2"
+                th:value="${paramPrioridade}"
+            >
+                <option value="">Todas as Prioridades</option>
+                <option value="Baixa">Baixa</option>
+                <option value="Média">Média</option>
+                <option value="Alta">Alta</option>
+            </select>
+            <select
+                name="tecnicoResponsavelId"
+                class="form-select me-2"
+                th:value="${paramTecnicoResponsavelId}"
+            >
+                <option value="">Todos os Técnicos</option>
+                <option th:each="tecnico : ${tecnicos}" th:value="${tecnico.id}" th:text="${tecnico.nome}"></option>
+            </select>
+            <button type="submit" class="btn btn-primary me-2">Pesquisar</button>
+            <a href="/view/chamados" class="btn btn-secondary">Limpar</a>
+        </form>
+        <a
+            th:href="@{'/cadastro-chamados'}"
+            class="btn btn-success btn-sm"
+            data-bs-toggle="tooltip"
+            title="Adicionar Chamado"
+        >
+            <i class="bi bi-plus-circle"></i> Adicionar Chamado
+        </a>
+    </div>
+
+            <!-- Tabela de Chamados -->
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Status</th>
+                            <th>Prioridade</th>
+                            <th>Técnico</th>
+                            <th>Usuário</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="chamado : ${chamados}">
+                        <tr>
+                            <!-- Exibição dos dados do chamado -->
+                            <td th:text="${chamado.descricao}">Descrição</td>
+                            <td th:text="${chamado.status}">Status</td>
+                            <td th:text="${chamado.prioridade}">Prioridade</td>
+                            <td th:text="${tecnicoMap[chamado.tecnicoResponsavelId]}">Técnico</td>
+                            <td th:text="${usuarioMap[chamado.usuarioSolicitanteId]}">Usuário</td>
+                            <td class="text-center">
+                                <div class="action-buttons d-flex justify-content-center">
+                                    <!-- Botão de editar -->
+                                    <form th:action="@{'/atualizar-chamado/' + ${chamado.id}}" method="put" class="d-inline">
+                                        <input type="hidden" name="_method" value="put" />
+                                        <button type="submit" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="Editar chamado">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </form>
+                                    <!-- Botão de encerrar -->
+                                    <a
+                                        th:href="@{'/encerrar/' + ${chamado.id}}"
+                                        class="btn btn-primary btn-sm"
+                                        data-bs-toggle="tooltip"
+                                        title="Encerrar Chamado"
+                                        onclick="return confirm('Tem certeza que deseja encerrar este chamado?')"
+                                        >
+                                        <i class="bi bi-check-circle"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </th:block>
+
+                    <!-- Mensagem de tabela vazia -->
+                    <tr th:if="${chamados.size() == 0}">
+                        <td colspan="6" class="empty-message">
+                            Nenhum chamado encontrado.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginação -->
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li
+                        class="page-item"
+                        th:classappend="${page.first ? 'disabled' : ''}"
+                        >
+                        <a
+                            class="page-link"
+                            th:href="@{'/view/chamados?page=' + ${page.number - 1}}"
+                            >Anterior</a
+                        >
+                    </li>
+                    <li
+                        class="page-item"
+                        th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                        th:classappend="${page.number == i ? 'active' : ''}"
+                        >
+                        <a
+                            class="page-link"
+                            th:href="@{'/view/chamados?page=' + ${i}}"
+                            th:text="${i + 1}"
+                            ></a>
+                    </li>
+                    <li class="page-item" th:classappend="${page.last ? 'disabled' : ''}">
+                        <a
+                            class="page-link"
+                            th:href="@{'/view/chamados?page=' + ${page.number + 1}}"
+                            >Próximo</a
+                        >
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Script JS -->
+        <script th:src="@{/js/script.js}"></script>
+        <script>
+            function toggleSidebar() {
+                const sidebar = document.querySelector("aside");
+                sidebar.classList.toggle("d-none");
+            }
+        </script>
+    </body>
+</html>

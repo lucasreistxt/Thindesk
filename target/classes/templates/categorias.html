@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lista de Categorias</title>
+        <!-- Bootstrap CSS -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+            rel="stylesheet"
+        />
+        <!-- CSS Personalizado -->
+        <link rel="stylesheet" th:href="@{/css/style.css}" />
+        <style>
+            /* Estilo para as linhas alternadas da tabela */
+            tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            tbody tr:nth-child(odd) {
+                background-color: #ffffff;
+            }
+
+            /* Ajuste para os botões de ação */
+            .action-buttons .btn {
+                margin-right: 5px;
+            }
+
+            /* Feedback visual quando não há dados */
+            .empty-message {
+                text-align: center;
+                font-size: 1.2em;
+                color: #6c757d;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Sidebar incluída como fragmento -->
+        <aside>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        </aside>
+
+        <!-- Botão para abrir/fechar a sidebar em telas pequenas -->
+        <button class="toggle-btn btn btn-dark d-md-none" onclick="toggleSidebar()">
+            <span>&#9776;</span>
+        </button>
+
+        <div class="container mt-4" th:fragment="content">
+            <h1 class="mb-4">Lista de Categorias</h1>
+
+             <!-- Filtro por nome, tipo e descrição -->
+             <div class="d-flex justify-content-between align-items-center mb-4">
+                <form th:action="@{/view/categorias}" method="get" class="d-flex w-75">
+                    <select
+                        name="nome"
+                        class="form-select me-2"
+                        th:value="${paramNome}"
+                    >
+                    <option value="">Todos os Tipos</option>
+                    <option value="Hardware">Hardware</option>
+                    <option value="Software">Software</option>
+                    <option value="Rede">Rede</option>
+                    </select>
+ 
+                    <input
+                        type="text"
+                        name="descricao"
+                        class="form-control me-2"
+                        placeholder="Buscar por descrição..."
+                        th:value="${paramDescricao}"
+                    />
+                    <button type="submit" class="btn btn-primary me-2">Pesquisar</button>
+                    <a href="/view/categorias" class="btn btn-secondary">Limpar</a>
+                </form>
+                <a
+                    th:href="@{'/cadastro-categorias'}"
+                    class="btn btn-success btn-sm"
+                    data-bs-toggle="tooltip"
+                    title="Adicionar Categoria"
+                >
+                    <i class="bi bi-plus-circle"></i> Adicionar Categoria
+                </a>
+            </div>
+
+            <!-- Tabela de Categorias -->
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="categoria : ${categorias}">
+                        <tr>
+                            <!-- Exibição dos dados da categoria -->
+                            <td th:text="${categoria.nome}">Nome da Categoria</td>
+                            <td th:text="${categoria.descricao}">Descrição</td>
+                            <td class="text-center">
+                                <div class="action-buttons d-flex justify-content-center">
+                                    <!-- Botão de editar -->
+                                    <a
+                                        th:href="@{'/atualizar-categoria/' + ${categoria.id}}"
+                                        class="btn btn-warning btn-sm"
+                                        data-bs-toggle="tooltip"
+                                        title="Editar Categoria"
+                                    >
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <!-- Botão de excluir -->
+                                    <a
+                                        th:href="@{'/deletar-categoria/' + ${categoria.id}}"
+                                        class="btn btn-danger btn-sm"
+                                        data-bs-toggle="tooltip"
+                                        title="Excluir Categoria"
+                                        onclick="return confirm('Tem certeza que deseja excluir esta categoria?')"
+                                    >
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </th:block>
+
+                    <!-- Mensagem de tabela vazia -->
+                    <tr th:if="${categorias.size() == 0}">
+                        <td colspan="3" class="empty-message">
+                            Nenhuma categoria encontrada.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginação -->
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li
+                        class="page-item"
+                        th:classappend="${page.first ? 'disabled' : ''}"
+                    >
+                        <a
+                            class="page-link"
+                            th:href="@{'/view/categorias?page=' + ${page.number - 1}}"
+                        >Anterior</a>
+                    </li>
+                    <li
+                        class="page-item"
+                        th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                        th:classappend="${page.number == i ? 'active' : ''}"
+                    >
+                        <a
+                            class="page-link"
+                            th:href="@{'/view/categorias?page=' + ${i}}"
+                            th:text="${i + 1}"
+                        ></a>
+                    </li>
+                    <li
+                        class="page-item"
+                        th:classappend="${page.last ? 'disabled' : ''}"
+                    >
+                        <a
+                            class="page-link"
+                            th:href="@{'/view/categorias?page=' + ${page.number + 1}}"
+                        >Próximo</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Script JS -->
+        <script th:src="@{/js/script.js}"></script>
+        <script>
+            function toggleSidebar() {
+                const sidebar = document.querySelector("aside");
+                sidebar.classList.toggle("d-none");
+            }
+        </script>
+    </body>
+</html>

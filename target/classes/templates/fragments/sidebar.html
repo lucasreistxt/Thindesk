@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sidebar</title>
+        <!-- Link para o CSS do Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+        <style>
+            #sidebar {
+                background-color: #343a40;
+                min-height: 100vh;
+                color: #ffffff;
+            }
+            #sidebar a.nav-link {
+                color: #d1d1d1;
+                transition: color 0.3s;
+            }
+            #sidebar a.nav-link:hover {
+                color: #ffffff;
+                background-color: #495057;
+                border-radius: 5px;
+            }
+            #sidebar .submenu {
+                display: none;
+                padding-left: 1rem;
+            }
+            #sidebar .submenu .nav-link {
+                font-size: 0.9rem;
+            }
+            .logout-btn {
+                width: 90%;
+                margin: 20px auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div th:fragment="sidebar">
+            <div id="sidebar" class="p-3">
+                <!-- Título do Menu -->
+                <h4 class="text-center py-3">ThinDesk Menu</h4>
+
+                <!-- Lista de Navegação -->
+                <ul class="nav flex-column">
+                    <!-- Link Início -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}" aria-current="page">
+                            <i class="bi bi-house-door"></i> <span>Início</span>
+                        </a>
+                    </li>
+
+                    <!-- Link Chamados -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/view/chamados}">
+                            <i class="bi bi-headset"></i> <span>Chamados</span>
+                        </a>
+                    </li>
+
+                    <!-- Link Clientes -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/view/clientes}">
+                            <i class="bi bi-people"></i> <span>Clientes</span>
+                        </a>
+                    </li>
+
+                    <!-- Link Técnicos -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/view/tecnicos}">
+                            <i class="bi bi-person-badge"></i> <span>Técnicos</span>
+                        </a>
+                    </li>
+
+                    <!-- Link Usuários -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/view/usuarios}">
+                            <i class="bi bi-person"></i> <span>Usuários</span>
+                        </a>
+                    </li>
+
+                    <!-- Link Categorias -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/view/categorias}">
+                            <i class="bi bi-folder"></i> <span>Categorias</span>
+                        </a>
+                    </li>
+
+                    <!-- Submenu Recursos -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="toggleSubmenu(event, this)">
+                            <i class="bi bi-tools"></i> <span>Recursos</span>
+                            <span class="float-end">&#9662;</span>
+                        </a>
+                        <ul class="nav flex-column submenu">
+
+                            <!-- Submenu de Cadastros -->
+                            <li class="nav-item">
+                                <ul class="nav flex-column submenu">
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/cadastro-chamados}">
+                                            <i class="bi bi-person-plus"></i> Chamado
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/cadastro-clientes}">
+                                            <i class="bi bi-person-plus"></i> Cliente
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/cadastro-usuarios}">
+                                            <i class="bi bi-person-plus"></i> Usuário
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/cadastro-tecnicos}">
+                                            <i class="bi bi-person-plus"></i> Técnico
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/cadastro-categorias}">
+                                            <i class="bi bi-person-plus"></i> Categoria
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                                <!-- Botão de Logout -->
+                                <form th:action="@{/logout}" method="post" class="logout-btn">
+                                    <button type="submit" class="btn btn-danger w-100" style="border-color:  #49535a; background-color: #49535a;"> Logout</button>
+                                </form>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+                            // Função para abrir/fechar o submenu
+                            function toggleSubmenu(event, element) {
+                                event.preventDefault();
+                                const submenu = element.nextElementSibling;
+                                submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+                            }
+        </script>
+    </body>
+</html>

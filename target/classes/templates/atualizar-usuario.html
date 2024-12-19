@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Atualizar Usuário</title>
+        <!-- Link para o CSS do Bootstrap -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="container mt-5">
+            <h1 class="mb-4 text-center">Atualizar Usuário</h1>
+            <form th:action="@{/atualizar-usuario/{id}(id=${usuario.id})}" th:object="${usuario}" method="post" class="card p-4 shadow">
+                <input type="hidden" name="_method" value="put" />
+                <!-- Campo Nome -->
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome</label>
+                    <input type="text" id="nome" name="nome" th:field="*{nome}" class="form-control" placeholder="Digite o nome do usuário" required>
+                </div>
+
+                <!-- Campo Email -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" th:field="*{email}" class="form-control" placeholder="Digite o email do usuário" required>
+                </div>
+
+                <!-- Campo Senha -->
+                <div class="mb-3">
+                    <label for="senha" class="form-label">Senha</label>
+                    <input type="password" id="senha" name="senha" th:field="*{senha}" class="form-control" placeholder="Digite a senha do usuário">
+                </div>
+
+                <!-- Campo Tipo de Usuário -->
+                <div class="mb-3">
+                    <label for="tipoUsuario" class="form-label">Tipo de Usuário</label>
+                    <select id="tipoUsuario" name="tipoUsuario" th:field="*{tipoUsuario}" class="form-select" required>
+                        <option value="CLIENTE" th:selected="*{tipoUsuario == 'CLIENTE'}">Cliente</option>
+                        <option value="TECNICO" th:selected="*{tipoUsuario == 'TECNICO'}">Técnico</option>
+                        <option value="ADMIN" th:selected="*{tipoUsuario == 'ADMIN'}">Admin</option>
+                    </select>
+                </div>
+
+                <!-- Botões -->
+                <div class="d-flex justify-content-between">
+                    <a href="/view/usuarios" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Atualizar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Link para o JS do Bootstrap -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

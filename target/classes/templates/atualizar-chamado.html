@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Atualizar Chamado</title>
+        <!-- Link para o CSS do Bootstrap -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="container mt-5">
+            <h1 class="mb-4 text-center">Atualizar Chamado</h1>
+            <form th:action="@{/atualizar-chamado/{id}(id=${chamado.id})}" th:object="${chamado}" method="post" class="card p-4 shadow">
+                <input type="hidden" name="_method" value="put" />
+                
+                <!-- Campo Título -->
+                <div class="mb-3">
+                    <label for="titulo" class="form-label">Título</label>
+                    <input type="text" id="titulo" name="titulo" th:field="*{titulo}" class="form-control" placeholder="Digite o título do chamado" required>
+                </div>
+
+                <!-- Campo Descrição -->
+                <div class="mb-3">
+                    <label for="descricao" class="form-label">Descrição</label>
+                    <textarea id="descricao" name="descricao" th:field="*{descricao}" class="form-control" placeholder="Descreva o problema" rows="3" required></textarea>
+                </div>
+
+                <!-- Campo Status -->
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select id="status" name="status" th:field="*{status}" class="form-select" required>
+                        <option value="Em Andamento">Em Andamento</option>
+                        <option value="Encerrado">Encerrado</option>
+                    </select>
+                </div>
+
+                <!-- Campo Prioridade -->
+                <div class="mb-3">
+                    <label for="prioridade" class="form-label">Prioridade</label>
+                    <select id="prioridade" name="prioridade" th:field="*{prioridade}" class="form-select" required>
+                        <option value="BAIXA" th:selected="*{prioridade == 'BAIXA'}">Baixa</option>
+                        <option value="MEDIA" th:selected="*{prioridade == 'MEDIA'}">Média</option>
+                        <option value="ALTA" th:selected="*{prioridade == 'ALTA'}">Alta</option>
+                    </select>
+                </div>
+
+                <!-- Campo Nível do Chamado -->
+                <div class="mb-3">
+                    <label for="nivelChamado" class="form-label">Nível do Chamado</label>
+                    <select id="nivelChamado" name="nivelChamado" th:field="*{nivelChamado}" class="form-select" required>
+                        <option value="1" th:selected="*{nivelChamado == '1'}">Nível 1</option>
+                        <option value="2" th:selected="*{nivelChamado == '2'}">Nível 2</option>
+                        <option value="3" th:selected="*{nivelChamado == '3'}">Nível 3</option>
+                    </select>
+                </div>
+
+                <!-- Campo Técnico Responsável -->
+                <div class="mb-3">
+                    <label for="tecnicoResponsavelId" class="form-label">Técnico Responsável</label>
+                    <select id="tecnicoResponsavelId" name="tecnicoResponsavelId" th:field="*{tecnicoResponsavelId}" class="form-select" required>
+                        <option value="" disabled selected>Selecione um técnico</option>
+                        <option th:each="tecnico : ${tecnicos}" th:value="${tecnico.id}" th:text="${tecnico.nome}"></option>
+                    </select>
+                </div>
+
+                <!-- Campo Usuário Solicitante -->
+                <div class="mb-3">
+                    <label for="usuarioSolicitanteId" class="form-label">Usuário Solicitante</label>
+                    <select id="usuarioSolicitanteId" name="usuarioSolicitanteId" th:field="*{usuarioSolicitanteId}" class="form-select" required>
+                        <option value="" disabled selected>Selecione um usuário</option>
+                        <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.nome}"></option>
+                    </select>
+                </div>
+
+                <!-- Botões -->
+                <div class="d-flex justify-content-between">
+                    <a href="/view/chamados" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Atualizar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Link para o JS do Bootstrap -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

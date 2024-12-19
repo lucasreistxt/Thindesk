@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Lista de Técnicos</title>
+        <!-- Bootstrap CSS -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+            rel="stylesheet"
+        />
+        <!-- CSS Personalizado -->
+        <link rel="stylesheet" th:href="@{/css/style.css}" />
+        <style>
+            /* Estilo para as linhas alternadas da tabela */
+            tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            tbody tr:nth-child(odd) {
+                background-color: #ffffff;
+            }
+
+            /* Ajuste para os botões de ação */
+            .action-buttons .btn {
+                margin-right: 5px;
+            }
+
+            /* Feedback visual quando não há dados */
+            .empty-message {
+                text-align: center;
+                font-size: 1.2em;
+                color: #6c757d;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Sidebar incluída como fragmento -->
+        <aside>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        </aside>
+
+        <!-- Botão para abrir/fechar a sidebar em telas pequenas -->
+        <button class="toggle-btn btn btn-dark d-md-none" onclick="toggleSidebar()">
+            <span>&#9776;</span>
+        </button>
+
+        <div class="container mt-4" th:fragment="content">
+            <h1 class="mb-4">Lista de Técnicos</h1>
+
+            <!-- Filtro por especialização e status -->
+            <div class="d-flex justify-content-between align-items-center">
+                <form th:action="@{/view/tecnicos}" method="get" class="d-flex w-100">
+                    <input
+                        type="text"
+                        name="nome"
+                        class="form-control"
+                        placeholder="Buscar técnico..."
+                        th:value="${param.nome}"
+                    />
+                    
+                    <select
+                        name="especializacao"
+                        class="form-select mx-2"
+                        th:value="${param.especializacao}"
+                    >
+                        <option value="">Todas as Especializações</option>
+                        <option th:each="especializacao : ${especializacoes}" th:value="${especializacao}" th:text="${especializacao}"></option>
+                    </select>
+                    
+                    <select
+                        name="status"
+                        class="form-select"
+                        th:value="${param.status}"
+                    >
+                        <option value="">Todos os Status</option>
+                        <option value="DISPONIVEL">Disponível</option>
+                        <option value="AUSENTE">Ausente</option>
+                    </select>
+                    
+                    <button type="submit" class="btn btn-primary mx-2">Pesquisar</button>
+                    <a href="/view/tecnicos" class="btn btn-secondary">Limpar</a>
+                </form>
+                <a
+                    th:href="@{'/cadastro-tecnicos'}"
+                    class="btn btn-success btn-sm ms-2"
+                    data-bs-toggle="tooltip"
+                    title="Adicionar Técnico"
+                >
+                    <i class="bi bi-plus-circle"></i> Adicionar Técnico
+                </a>
+            </div>
+
+            <!-- Tabela de Técnicos -->
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Especialização</th>
+                            <th>Status</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="tecnico : ${tecnicos}">
+                        <tr>
+                            <!-- Exibição dos dados do técnico -->
+                            <td th:text="${tecnico.nome}">Nome do Técnico</td>
+                            <td th:text="${tecnico.especializacao}">Especialização</td>
+                            <td th:text="${tecnico.status}">Status</td>
+                            <td class="text-center">
+                                <div class="action-buttons d-flex justify-content-center">
+                                    <!-- Botão de editar -->
+                                    <form th:action="@{'/atualizar-tecnico/' + ${tecnico.id}}" method="put" class="d-inline">
+                                        <input type="hidden" name="_method" value="put" />
+                                        <button type="submit" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="Editar Técnico">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </form>
+                                    <!-- Botão de excluir -->
+                                    <form th:action="@{'/deletar-tecnico/' + ${tecnico.id}}" method="post" class="d-inline">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Excluir Tecnico" onclick="return confirm('Tem certeza que deseja excluir este tecnico?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </th:block>
+
+                    <!-- Mensagem de tabela vazia -->
+                    <tr th:if="${tecnicos.size() == 0}">
+                        <td colspan="4" class="empty-message">
+                            Nenhum técnico encontrado.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginação -->
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li
+                        class="page-item"
+                        th:classappend="${page.first ? 'disabled' : ''}"
+                        >
+                        <a
+                            class="page-link"
+                            th:href="@{'/tecnicos?page=' + ${page.number - 1}}"
+                            >Anterior</a
+                        >
+                    </li>
+                    <li
+                        class="page-item"
+                        th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                        th:classappend="${page.number == i ? 'active' : ''}"
+                        >
+                        <a
+                            class="page-link"
+                            th:href="@{'/tecnicos?page=' + ${i}}"
+                            th:text="${i + 1}"
+                            ></a>
+                    </li>
+                    <li class="page-item" th:classappend="${page.last ? 'disabled' : ''}">
+                        <a
+                            class="page-link"
+                            th:href="@{'/tecnicos?page=' + ${page.number + 1}}"
+                            >Próximo</a
+                        >
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Script JS -->
+        <script th:src="@{/js/script.js}"></script>
+        <script>
+            function toggleSidebar() {
+                const sidebar = document.querySelector("aside");
+                sidebar.classList.toggle("d-none");
+            }
+        </script>
+    </body>
+</html>
