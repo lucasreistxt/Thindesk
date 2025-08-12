@@ -69,5 +69,5 @@ Este projeto foi desenvolvido como parte de um Trabalho de Conclusão de Curso e
 
 ✍️ Desenvolvido com Java, Spring e MongoDB, integrando design no Figma, gestão no Trello e identidade visual no Canva. 
 
-Imagens: <img width="945" height="451" alt="image" src="https://github.com/user-attachments/assets/3df2be53-bd1d-4a47-808e-2123373e4739" />
+<img width="945" height="451" alt="image" src="https://github.com/user-attachments/assets/3df2be53-bd1d-4a47-808e-2123373e4739" />
 
